@@ -1,5 +1,5 @@
 
-export type Category = 'Sports' | 'Study' | 'Social' | 'Projects' | 'Gaming' | 'Clubs';
+export type Category = 'Sports' | 'Basketball' | 'Football' | 'Cricket' | 'Tennis' | 'Badminton' | 'Table Tennis' | 'Volleyball' | 'Study' | 'Social' | 'Projects' | 'Gaming' | 'Clubs';
 
 export interface Participant {
   id: string;
@@ -27,6 +27,8 @@ export interface User {
   };
 }
 
+export type ActivityStatus = 'Upcoming' | 'Active' | 'Completed' | 'Cancelled';
+
 export interface Activity {
   id: string;
   title: string;
@@ -42,6 +44,8 @@ export interface Activity {
   description: string;
   createdAt: string;
   participants: Participant[];
+  status?: ActivityStatus;
+  outcome?: string; // e.g., "Won match", "Finished Chapter 4", "Formed Team"
 }
 
 export interface Message {

@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { MapPin, Clock, Users, Star, ArrowUpRight, Check, Sparkles, User as UserIcon, X } from 'lucide-react';
+import { MapPin, Clock, Users, Star, ArrowUpRight, Check, Sparkles, User as UserIcon, X, Trash2, Zap, AlertTriangle } from 'lucide-react';
 import { Activity } from '../types';
 import { CATEGORIES } from '../constants';
 
@@ -9,14 +8,29 @@ interface ActivityCardProps {
   isSuggested?: boolean;
   matchReason?: string;
   onJoin: (id: string) => void;
+  onQuickJoin?: (id: string) => void;
   onUnjoin: (id: string) => void;
+  onDelete?: (id: string) => void;
+  onReportActivity?: (id: string) => void;
   currentUserId?: string;
 }
 
-const ActivityCard: React.FC<ActivityCardProps> = ({ activity, isSuggested, matchReason, onJoin, onUnjoin, currentUserId }) => {
+const ActivityCard: React.FC<ActivityCardProps> = ({ activity, isSuggested, matchReason, onJoin, onQuickJoin, onUnjoin, onDelete, onReportActivity, currentUserId }) => {
   const category = CATEGORIES.find(c => c.name === activity.category);
   const isFull = activity.slotsTaken >= activity.slotsTotal;
   const hasJoined = activity.participants.some(p => p.id === currentUserId);
+  const isCreator = activity.creatorId === currentUserId;
+
+  // Logic consistent with JoinModal to determine if skill selection is required
+  const needsSkill = ['Sports', 'Projects', 'Gaming'].includes(activity.category);
+
+  const handleReport = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (window.confirm(`Flag "${activity.title}" for community conduct review? Our safety team will investigate this engagement immediately.`)) {
+      onReportActivity?.(activity.id);
+    }
+  };
   
   return (
     <div className={`group relative bg-white dark:bg-slate-900/60 rounded-[1.5rem] p-6 border border-slate-200 dark:border-white/5 transition-all duration-500 hover:shadow-2xl hover:shadow-slate-200 dark:hover:shadow-none hover:-translate-y-1 ${isSuggested ? 'ring-1 ring-amber-500/30' : ''}`}>
@@ -26,6 +40,30 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity, isSuggested, matc
           Smart Suggestion
         </div>
       )}
+
+      <div className="absolute -top-2 -right-2 flex gap-2 z-20">
+        <button 
+          onClick={handleReport}
+          className="w-9 h-9 rounded-xl bg-white dark:bg-slate-800 text-slate-400 hover:text-amber-500 flex items-center justify-center shadow-lg border border-slate-100 dark:border-white/5 hover:scale-110 active:scale-95 transition-all"
+          title="Report Conduct"
+        >
+          <AlertTriangle size={16} />
+        </button>
+
+        {isCreator && onDelete && (
+          <button 
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onDelete(activity.id);
+            }}
+            className="w-9 h-9 rounded-xl bg-rose-500 text-white flex items-center justify-center shadow-xl hover:scale-110 active:scale-95 transition-all"
+            title="Delete Activity"
+          >
+            <Trash2 size={16} />
+          </button>
+        )}
+      </div>
 
       <div className="flex justify-between items-start mb-6">
         <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border ${category?.border} ${category?.color.replace('bg-', 'bg-opacity-10 dark:bg-opacity-5 bg-')} shadow-sm transition-colors`}>
@@ -37,7 +75,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity, isSuggested, matc
         </div>
       </div>
 
-      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 leading-snug group-hover:text-[var(--primary)] transition-colors">
+      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 leading-snug group-hover:text-[var(--primary)] transition-colors pr-10">
         {activity.title}
       </h3>
 
@@ -52,7 +90,6 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity, isSuggested, matc
         </div>
       </div>
 
-      {/* Participants List - Now using silhouette placeholders */}
       <div className="mb-8 space-y-3">
         <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Active Pulse Lineup</p>
         <div className="flex items-center -space-x-2">
@@ -103,34 +140,47 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity, isSuggested, matc
                 <UserIcon size={12} />
               </div>
             )}
-            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white dark:border-slate-800" style={{ backgroundColor: 'var(--primary)' }}></div>
+            <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-slate-800" style={{ backgroundColor: 'var(--primary)' }}></div>
           </div>
           <div className="flex flex-col">
-            <span className="text-[10px] font-black text-slate-900 dark:text-slate-200 uppercase tracking-widest">{activity.creatorName}</span>
+            <span className="text-[10px] font-black text-slate-900 dark:text-2xl-200 uppercase tracking-widest">{activity.creatorName}</span>
             <div className="flex items-center gap-1 text-[9px] text-amber-600 dark:text-amber-500 font-bold uppercase tracking-widest">
-              Verified Host
+              {isCreator ? 'You (Host)' : 'Verified Host'}
             </div>
           </div>
         </div>
         
-        {hasJoined ? (
-          <button 
-            onClick={() => onUnjoin(activity.id)}
-            className="flex items-center gap-2 text-rose-500 hover:text-white hover:bg-rose-500 border border-rose-500 text-[10px] font-black py-2.5 px-5 rounded-lg transition-all active:scale-95 uppercase tracking-[0.15em] bg-transparent"
-          >
-            <X size={14} /> Unjoin
-          </button>
-        ) : (
-          <button 
-            disabled={isFull}
-            onClick={() => onJoin(activity.id)}
-            className={`flex items-center gap-2 text-white text-[10px] font-black py-2.5 px-5 rounded-lg transition-all shadow-xl active:scale-95 uppercase tracking-[0.15em] ${isFull ? 'bg-slate-200 dark:bg-white/5 text-slate-400 shadow-none cursor-not-allowed border border-slate-100 dark:border-white/5' : 'hover:opacity-90'}`}
-            style={!isFull ? { backgroundColor: 'var(--primary)' } : {}}
-          >
-            {isFull ? <Check size={14} /> : 'Join'}
-            {isFull ? 'Full' : <ArrowUpRight size={14} />}
-          </button>
-        )}
+        <div className="flex items-center gap-2">
+          {hasJoined ? (
+            <button 
+              onClick={() => onUnjoin(activity.id)}
+              className="flex items-center gap-2 text-rose-500 hover:text-white hover:bg-rose-500 border border-rose-500 text-[10px] font-black py-2.5 px-5 rounded-lg transition-all active:scale-95 uppercase tracking-[0.15em] bg-transparent"
+            >
+              <X size={14} /> Unjoin
+            </button>
+          ) : (
+            <div className="flex gap-2">
+              {!needsSkill && !isFull && !isCreator && onQuickJoin && (
+                <button 
+                  onClick={() => onQuickJoin(activity.id)}
+                  className="hidden sm:flex items-center gap-2 bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-[10px] font-black py-2.5 px-4 rounded-lg transition-all hover:bg-emerald-600 hover:text-white dark:hover:text-black active:scale-95 uppercase tracking-[0.15em]"
+                  title="Direct Enrollment"
+                >
+                  <Zap size={14} fill="currentColor" /> Quick Join
+                </button>
+              )}
+              <button 
+                disabled={isFull || isCreator}
+                onClick={() => onJoin(activity.id)}
+                className={`flex items-center gap-2 text-white text-[10px] font-black py-2.5 px-5 rounded-lg transition-all shadow-xl active:scale-95 uppercase tracking-[0.15em] ${(isFull || isCreator) ? 'bg-slate-200 dark:bg-white/5 text-slate-400 shadow-none cursor-not-allowed border border-slate-100 dark:border-white/5' : 'hover:opacity-90'}`}
+                style={!(isFull || isCreator) ? { backgroundColor: 'var(--primary)' } : {}}
+              >
+                {isFull ? <Check size={14} /> : (isCreator ? <Check size={14} /> : 'Join')}
+                {isFull ? 'Full' : (isCreator ? 'Hosting' : <ArrowUpRight size={14} />)}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

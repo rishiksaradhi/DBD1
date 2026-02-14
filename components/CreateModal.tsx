@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { X, MapPin, Users, Clock, AlignLeft, ShieldPlus, Sparkles } from 'lucide-react';
+import { X, MapPin, Users, Clock, AlignLeft, ShieldPlus, Sparkles, ChevronDown } from 'lucide-react';
 import { CATEGORIES } from '../constants';
 import { Category } from '../types';
 
@@ -27,6 +27,9 @@ const CreateModal: React.FC<CreateModalProps> = ({ isOpen, onClose, onSubmit, in
 
   if (!isOpen) return null;
 
+  const mainCategories = CATEGORIES.filter(c => !c.parent);
+  const sportsCategories = CATEGORIES.filter(c => c.parent === 'Sports');
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-lg animate-in fade-in duration-300">
       <div className="bg-white dark:bg-[#0f172a] w-full max-w-xl rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in duration-300 border border-slate-200 dark:border-white/10">
@@ -48,26 +51,56 @@ const CreateModal: React.FC<CreateModalProps> = ({ isOpen, onClose, onSubmit, in
         </div>
 
         <div className="p-10 space-y-8 max-h-[60vh] overflow-y-auto no-scrollbar">
-          {/* Category Picker */}
-          <div className="space-y-4">
-             <label className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400 block px-1">Specialization Section</label>
-             <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar">
-              {CATEGORIES.map((cat) => (
-                <button
-                  key={cat.name}
-                  onClick={() => setCategory(cat.name)}
-                  className={`flex flex-col items-center gap-2 px-6 py-4 rounded-2xl min-w-[100px] transition-all border ${
-                    category === cat.name 
-                      ? `text-white border-transparent shadow-xl -translate-y-1` 
-                      : 'bg-slate-50 dark:bg-white/5 text-slate-400 dark:text-slate-500 border-slate-200 dark:border-white/5 hover:border-slate-300'
-                  }`}
-                  style={category === cat.name ? { backgroundColor: 'var(--primary)' } : {}}
-                >
-                  {cat.icon}
-                  <span className="text-[9px] font-black uppercase tracking-widest">{cat.name}</span>
-                </button>
-              ))}
-            </div>
+          {/* Hierarchical Category Picker */}
+          <div className="space-y-6">
+             <label className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400 block px-1">Engagement Specialist Domain</label>
+             
+             <div className="space-y-4">
+               {/* Main Channels */}
+               <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                {mainCategories.map((cat) => (
+                  <button
+                    key={cat.name}
+                    onClick={() => setCategory(cat.name)}
+                    className={`flex items-center gap-3 px-6 py-4 rounded-2xl whitespace-nowrap transition-all border ${
+                      category === cat.name || (cat.name === 'Sports' && sportsCategories.some(s => s.name === category))
+                        ? `text-white border-transparent shadow-xl` 
+                        : 'bg-slate-50 dark:bg-white/5 text-slate-400 dark:text-slate-500 border-slate-200 dark:border-white/5 hover:border-slate-300'
+                    }`}
+                    style={category === cat.name || (cat.name === 'Sports' && sportsCategories.some(s => s.name === category)) ? { backgroundColor: 'var(--primary)' } : {}}
+                  >
+                    {cat.icon}
+                    <span className="text-[9px] font-black uppercase tracking-widest">{cat.name}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Segregated Sports Sub-Selection */}
+              {(category === 'Sports' || sportsCategories.some(s => s.name === category)) && (
+                <div className="p-6 bg-slate-50 dark:bg-black/20 rounded-3xl border border-slate-100 dark:border-white/5 space-y-4 animate-in slide-in-from-top-2 duration-300">
+                   <div className="flex items-center justify-between">
+                     <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Select Specific Game</span>
+                     <ChevronDown size={10} className="text-slate-400" />
+                   </div>
+                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {sportsCategories.map(sport => (
+                        <button
+                          key={sport.name}
+                          type="button"
+                          onClick={() => setCategory(sport.name)}
+                          className={`px-3 py-3 rounded-xl text-[8px] font-black uppercase tracking-widest transition-all border ${
+                            category === sport.name 
+                              ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white border-slate-200 dark:border-white/10 shadow-md scale-105' 
+                              : 'bg-transparent text-slate-400 border-slate-200 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5'
+                          }`}
+                        >
+                          {sport.name}
+                        </button>
+                      ))}
+                   </div>
+                </div>
+              )}
+             </div>
           </div>
 
           <div className="grid grid-cols-1 gap-6">
@@ -78,7 +111,6 @@ const CreateModal: React.FC<CreateModalProps> = ({ isOpen, onClose, onSubmit, in
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Midterm Cram Session, 5v5 Friendly, Hackathon Kickoff"
                 className="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/5 rounded-2xl p-5 focus:border-opacity-30 focus:ring-4 focus:ring-opacity-5 transition-all outline-none text-slate-900 dark:text-white font-semibold placeholder:text-slate-400"
-                // Fix: Removed 'ringColor' as it is not a valid CSS property for the style object.
                 style={{ borderColor: 'var(--primary)' }}
                 autoFocus
               />

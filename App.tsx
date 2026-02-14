@@ -12,6 +12,17 @@ import { Activity, Category, MatchSuggestion, User, Participant } from './types'
 import { CATEGORIES, MOCK_ACTIVITIES, MOCK_USER } from './constants';
 import { getSmartMatches, getQuickGreeting, QuotaExhaustedError } from './services/geminiService';
 
+declare global {
+  // Use AIStudio interface to match existing global definitions and avoid property type conflict
+  interface AIStudio {
+    hasSelectedApiKey: () => Promise<boolean>;
+    openSelectKey: () => Promise<void>;
+  }
+  interface Window {
+    aistudio?: AIStudio;
+  }
+}
+
 const AvatarPlaceholder: React.FC<{ size?: string; iconSize?: number; className?: string }> = ({ size = "w-48 h-48 md:w-56 md:h-56", iconSize = 64, className = "" }) => (
   <div className={`${size} rounded-[3.5rem] border-[8px] border-white dark:border-slate-800 shadow-2xl bg-slate-100 dark:bg-slate-800/80 flex items-center justify-center text-slate-400 dark:text-slate-500 overflow-hidden relative ${className}`}>
     <div className="absolute inset-0 bg-gradient-to-tr from-slate-200 to-transparent dark:from-slate-700/50 opacity-50"></div>
@@ -96,7 +107,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const init = async () => {
       // Check for custom key
-      if (window.aistudio && typeof window.aistudio.hasSelectedApiKey === 'function') {
+      if (window.aistudio) {
         const hasKey = await window.aistudio.hasSelectedApiKey();
         setHasCustomKey(hasKey);
       }
@@ -115,7 +126,7 @@ const App: React.FC = () => {
   }, [user, isLoggedIn]);
 
   const handleOpenKeySelector = async () => {
-    if (window.aistudio && typeof window.aistudio.openSelectKey === 'function') {
+    if (window.aistudio) {
       await window.aistudio.openSelectKey();
       setHasCustomKey(true);
       setQuotaExhausted(false);

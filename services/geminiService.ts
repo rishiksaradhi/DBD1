@@ -138,7 +138,7 @@ export async function getQuickGreeting(user: User): Promise<string> {
         model: "gemini-3-flash-preview",
         contents: `Welcome ${user.name} to Campus Connect. Short, cool, high-energy (max 5 words).`,
       });
-      return response.text.trim();
+      return response.text?.trim() || `Welcome, ${user.name.split(' ')[0]}!`;
     });
   } catch (error) {
     if (error instanceof QuotaExhaustedError) throw error;

@@ -72,8 +72,6 @@ const App: React.FC = () => {
   const [quotaExhausted, setQuotaExhausted] = useState(false);
   const [isCloudSyncing, setIsCloudSyncing] = useState(false);
   const [profileSubTab, setProfileSubTab] = useState<'overview' | 'engagements'>('overview');
-  
-  const searchRef = useRef<HTMLDivElement>(null);
 
   // Sync state to local storage
   useEffect(() => {
@@ -144,17 +142,27 @@ const App: React.FC = () => {
   const handleLogin = () => {
     setIsLoggedIn(true);
     localStorage.setItem('campus_connect_logged_in', 'true');
-    // If first time login, trigger profile setup immediately
-    if (!hasCompletedSetup) {
-      setTimeout(() => setIsEditProfileOpen(true), 100);
+    // Force state check
+    const currentSetup = localStorage.getItem('campus_connect_setup') === 'true';
+    if (!currentSetup) {
+      setTimeout(() => setIsEditProfileOpen(true), 300);
     }
   };
 
   const handleLogout = useCallback(() => {
+    // Thoroughly clear session and identity for a "Fresh" next login
     setIsLoggedIn(false);
-    localStorage.setItem('campus_connect_logged_in', 'false');
+    setHasCompletedSetup(false);
+    setUser(MOCK_USER);
+    
+    // Clear local storage completely for fresh start or individual keys
+    localStorage.removeItem('campus_connect_logged_in');
+    localStorage.removeItem('campus_connect_setup');
+    localStorage.removeItem('campus_connect_user');
+    localStorage.removeItem('campus_connect_notifications');
+    
+    // Reset transient navigation
     setActiveTab('home');
-    // Reset transient states
     setSearchQuery('');
     setSelectedCategory('All');
   }, []);

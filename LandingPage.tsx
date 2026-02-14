@@ -59,23 +59,23 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onSelectKey, hasCust
       </nav>
 
       {/* Hero Content */}
-      <main className="relative z-10 pt-44 pb-32 px-6 max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-20">
-        <div className="flex-1 space-y-12 text-center lg:text-left">
-          <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-50 dark:bg-indigo-500/10 rounded-full border border-indigo-100 dark:border-indigo-500/20 animate-in fade-in slide-in-from-top-4 duration-1000">
+      <main className="relative z-10 pt-44 pb-32 px-6 max-w-7xl mx-auto flex flex-col items-center text-center">
+        <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+          <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-50 dark:bg-indigo-500/10 rounded-full border border-indigo-100 dark:border-indigo-500/20">
             <Sparkles size={16} className="text-indigo-600 animate-pulse" />
             <span className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em]">Institutional Intelligence Active</span>
           </div>
           
-          <h1 className="text-6xl md:text-8xl xl:text-9xl font-black tracking-tighter leading-[0.8] uppercase animate-in fade-in slide-in-from-bottom-8 duration-1000">
+          <h1 className="text-6xl md:text-8xl xl:text-9xl font-black tracking-tighter leading-[0.8] uppercase">
             Elevate Your <br />
             Campus <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Pulse.</span>
           </h1>
           
-          <p className="max-w-xl mx-auto lg:mx-0 text-slate-500 dark:text-slate-400 font-semibold text-xl leading-relaxed animate-in fade-in duration-1000 delay-300">
+          <p className="max-w-2xl mx-auto text-slate-500 dark:text-slate-400 font-semibold text-xl leading-relaxed">
             The exclusive student interaction platform for high-frequency activity pairing, study syndicates, and elite networking.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-5 pt-6 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-5 pt-6">
             <button 
               onClick={() => setShowLoginOverlay(true)}
               className="w-full sm:w-auto px-12 py-6 bg-indigo-600 text-white font-black rounded-3xl shadow-[0_20px_40px_rgba(79,70,229,0.3)] uppercase text-xs tracking-[0.2em] flex items-center justify-center gap-4 transition-all hover:scale-105 active:scale-95 hover:bg-indigo-700"
@@ -90,61 +90,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onSelectKey, hasCust
               {hasCustomKey ? 'Capacity Optimized' : 'Quota Optimizer'}
             </button>
           </div>
-
-          <div className="flex items-center justify-center lg:justify-start gap-8 pt-10 border-t border-slate-100 dark:border-white/5 animate-in fade-in duration-1000 delay-700">
-             <div className="flex -space-x-3">
-               {[1,2,3,4].map(i => (
-                 <div key={i} className="w-10 h-10 rounded-full border-4 border-white dark:border-slate-950 bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-                   <Users size={14} className="text-slate-400" />
-                 </div>
-               ))}
-               <div className="w-10 h-10 rounded-full border-4 border-white dark:border-slate-950 bg-indigo-600 flex items-center justify-center text-white text-[10px] font-bold">
-                 +2k
-               </div>
-             </div>
-             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Join 2,000+ Verified Students</p>
-          </div>
-        </div>
-
-        {/* Hero Illustration / Visual */}
-        <div className="flex-1 relative hidden lg:block animate-in fade-in zoom-in duration-1000 delay-500">
-           <div className="relative w-full aspect-square max-w-lg mx-auto">
-              <div className="absolute inset-0 bg-indigo-600/5 rounded-[4rem] rotate-6 scale-105 blur-2xl"></div>
-              <div className="absolute inset-0 bg-white dark:bg-slate-900 rounded-[4rem] border border-slate-100 dark:border-white/10 shadow-2xl p-10 flex flex-col justify-between">
-                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                       <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-500"><Zap size={28}/></div>
-                       <div>
-                          <p className="text-xs font-black uppercase tracking-widest text-slate-900 dark:text-white">Active Pulse</p>
-                          <p className="text-[10px] font-bold text-slate-400">Library Floor 3 // 8 Live</p>
-                       </div>
-                    </div>
-                    <div className="w-12 h-12 rounded-full border-2 border-slate-100 dark:border-white/5 flex items-center justify-center text-indigo-600"><Star size={20} fill="currentColor"/></div>
-                 </div>
-
-                 <div className="space-y-6">
-                    <div className="p-6 bg-slate-50 dark:bg-white/5 rounded-3xl space-y-4">
-                       <div className="flex justify-between items-center">
-                          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600">Upcoming Synergy</span>
-                          <span className="text-[9px] font-bold text-slate-400">14:00 PM</span>
-                       </div>
-                       <h4 className="text-2xl font-black uppercase tracking-tight">CS101 Final Review</h4>
-                       <div className="flex items-center gap-2">
-                          <CheckCircle2 size={14} className="text-emerald-500" />
-                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">3/5 Slots Occupied</span>
-                       </div>
-                    </div>
-                 </div>
-
-                 <div className="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-white/5">
-                    <div className="flex items-center gap-3">
-                       <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/10"></div>
-                       <p className="text-[10px] font-black uppercase tracking-widest">Sarah Chen // Host</p>
-                    </div>
-                    <div className="px-4 py-2 bg-indigo-600 text-white text-[9px] font-black rounded-xl uppercase tracking-widest">Join Synergy</div>
-                 </div>
-              </div>
-           </div>
         </div>
       </main>
 

@@ -7,7 +7,7 @@ import CreateModal from './components/CreateModal';
 import EditProfileModal from './components/EditProfileModal';
 import JoinModal from './components/JoinModal';
 import SplashScreen from './components/SplashScreen';
-import PublicPage from './public';
+import LandingPage from './LandingPage';
 import { Activity, Category, MatchSuggestion, User, Participant } from './types';
 import { CATEGORIES, MOCK_ACTIVITIES, MOCK_USER } from './constants';
 import { getSmartMatches, getQuickGreeting, QuotaExhaustedError } from './services/geminiService';
@@ -225,7 +225,7 @@ const App: React.FC = () => {
   }, [suggestions, activities]);
 
   if (isAppInitializing) return <SplashScreen />;
-  if (!isLoggedIn) return <PublicPage onLogin={handleLogin} onSelectKey={handleOpenKeySelector} hasCustomKey={hasCustomKey} />;
+  if (!isLoggedIn) return <LandingPage onLogin={handleLogin} onSelectKey={handleOpenKeySelector} hasCustomKey={hasCustomKey} />;
 
   const PulseFeed = () => (
     <>

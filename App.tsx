@@ -7,7 +7,7 @@ import CreateModal from './components/CreateModal';
 import EditProfileModal from './components/EditProfileModal';
 import JoinModal from './components/JoinModal';
 import SplashScreen from './components/SplashScreen';
-import AuthPage from './components/AuthPage';
+import PublicPage from './public';
 import { Activity, Category, MatchSuggestion, User, Participant } from './types';
 import { CATEGORIES, MOCK_ACTIVITIES, MOCK_USER } from './constants';
 import { getSmartMatches, getQuickGreeting, QuotaExhaustedError } from './services/geminiService';
@@ -105,20 +105,21 @@ const App: React.FC = () => {
         setIsAppInitializing(false);
       }, 2500);
 
-      await fetchAiData();
+      if (isLoggedIn) {
+        await fetchAiData();
+      }
       
       return () => clearTimeout(timer);
     };
     init();
-  }, [user]);
+  }, [user, isLoggedIn]);
 
   const handleOpenKeySelector = async () => {
     if (window.aistudio && typeof window.aistudio.openSelectKey === 'function') {
       await window.aistudio.openSelectKey();
       setHasCustomKey(true);
       setQuotaExhausted(false);
-      // Refresh AI data after key selection
-      await fetchAiData();
+      if (isLoggedIn) await fetchAiData();
     }
   };
 
@@ -224,7 +225,7 @@ const App: React.FC = () => {
   }, [suggestions, activities]);
 
   if (isAppInitializing) return <SplashScreen />;
-  if (!isLoggedIn) return <AuthPage onLogin={handleLogin} onSelectKey={handleOpenKeySelector} hasCustomKey={hasCustomKey} />;
+  if (!isLoggedIn) return <PublicPage onLogin={handleLogin} onSelectKey={handleOpenKeySelector} hasCustomKey={hasCustomKey} />;
 
   const PulseFeed = () => (
     <>

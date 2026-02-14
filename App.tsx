@@ -75,7 +75,7 @@ const App: React.FC = () => {
   
   const searchRef = useRef<HTMLDivElement>(null);
 
-  // Sync state to local storage whenever critical data changes
+  // Sync state to local storage
   useEffect(() => {
     localStorage.setItem('campus_connect_user', JSON.stringify(user));
     localStorage.setItem('campus_connect_activities', JSON.stringify(activities));
@@ -141,10 +141,22 @@ const App: React.FC = () => {
     }
   };
 
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+    localStorage.setItem('campus_connect_logged_in', 'true');
+    // If first time login, trigger profile setup immediately
+    if (!hasCompletedSetup) {
+      setTimeout(() => setIsEditProfileOpen(true), 100);
+    }
+  };
+
   const handleLogout = useCallback(() => {
     setIsLoggedIn(false);
     localStorage.setItem('campus_connect_logged_in', 'false');
     setActiveTab('home');
+    // Reset transient states
+    setSearchQuery('');
+    setSelectedCategory('All');
   }, []);
 
   const handleCreateActivity = (data: any) => {
@@ -199,7 +211,16 @@ const App: React.FC = () => {
   const userCreations = useMemo(() => activities.filter(act => act.creatorId === user.id), [activities, user.id]);
 
   if (isAppInitializing) return <SplashScreen />;
-  if (!isLoggedIn) return <LandingPage onLogin={() => { setIsLoggedIn(true); localStorage.setItem('campus_connect_logged_in', 'true'); }} onSelectKey={handleOpenKeySelector} hasCustomKey={hasCustomKey} />;
+  
+  if (!isLoggedIn) {
+    return (
+      <LandingPage 
+        onLogin={handleLogin} 
+        onSelectKey={handleOpenKeySelector} 
+        hasCustomKey={hasCustomKey} 
+      />
+    );
+  }
 
   return (
     <Layout activeTab={activeTab} setActiveTab={setActiveTab} onCreateClick={() => setIsCreateOpen(true)} user={user} isSyncing={isCloudSyncing} onLogout={handleLogout}>
